@@ -1,0 +1,137 @@
+<?xml version="1.0"?>
+<robot>
+
+  <!-- 노란색 본체 (Yellow Base) -->
+  <gazebo reference="base_link">
+    <visual>
+      <material>
+        <ambient>0.9 0.8 0.0 1.0</ambient>
+        <diffuse>0.9 0.8 0.0 1.0</diffuse>
+      </material>
+    </visual>
+  </gazebo>
+
+  <!-- 앞/뒤 보라색 포인트 장식 (가상의 링크에 색상 부여) -->
+  <gazebo reference="front_bumper">
+    <visual>
+      <material>
+        <ambient>0.4 0.0 0.6 1.0</ambient>
+        <diffuse>0.4 0.0 0.6 1.0</diffuse>
+      </material>
+    </visual>
+  </gazebo>
+  
+  <gazebo reference="rear_bumper">
+    <visual>
+      <material>
+        <ambient>0.4 0.0 0.6 1.0</ambient>
+        <diffuse>0.4 0.0 0.6 1.0</diffuse>
+      </material>
+    </visual>
+  </gazebo>
+
+  <!-- 센서 마스트 기둥 (Silver/White Mast) -->
+  <gazebo reference="sensor_mast">
+    <visual>
+      <material>
+        <ambient>0.8 0.8 0.8 1.0</ambient>
+        <diffuse>0.8 0.8 0.8 1.0</diffuse>
+      </material>
+    </visual>
+  </gazebo>
+  
+  <gazebo reference="left_wheel">
+    <mu1>5.0</mu1>
+    <mu2>5.0</mu2>
+    <material>
+      <ambient>1.0 0.7 0.0 1.0</ambient>
+      <diffuse>1.0 0.7 0.0 1.0</diffuse>
+    </material>
+  </gazebo>
+  
+  <gazebo reference="right_wheel">
+    <mu1>5.0</mu1>
+    <mu2>5.0</mu2>
+    <material>
+      <ambient>1.0 0.7 0.0 1.0</ambient>
+      <diffuse>1.0 0.7 0.0 1.0</diffuse>
+    </material>
+  </gazebo>
+
+  <gazebo reference="left_caster_link">
+    <mu1>0.0</mu1>
+    <mu2>0.0</mu2>
+    <material>
+      <ambient>0.3 0.0 0.5 1.0</ambient>
+      <diffuse>0.3 0.0 0.5 1.0</diffuse>
+    </material>
+  </gazebo>
+
+  <gazebo reference="right_caster_link">
+    <mu1>0.0</mu1>
+    <mu2>0.0</mu2>
+    <material>
+      <ambient>0.3 0.0 0.5 1.0</ambient>
+      <diffuse>0.3 0.0 0.5 1.0</diffuse>
+    </material>
+  </gazebo>
+
+  <gazebo>
+    <plugin name="gz::sim::systems::DiffDrive" filename="gz-sim-diff-drive-system">
+      <left_joint>left_wheel_hinge</left_joint>
+      <right_joint>right_wheel_hinge</right_joint>
+      <wheel_separation>0.5672</wheel_separation>
+      <wheel_radius>0.1015</wheel_radius>
+      <odom_publish_frequency>30</odom_publish_frequency>
+      <topic>cmd_vel</topic>
+      <odom_topic>odom</odom_topic>
+      <frame_id>odom</frame_id>
+      <child_frame_id>base_footprint</child_frame_id>
+    </plugin>
+    <plugin name="gz::sim::systems::JointStatePublisher" filename="gz-sim-joint-state-publisher-system">
+      <topic>joint_states</topic>
+      <joint_name>left_wheel_hinge</joint_name>
+      <joint_name>right_wheel_hinge</joint_name>
+    </plugin>
+  </gazebo>
+
+
+  <!-- 노란색 본체 (Yellow Base) -->
+  <gazebo reference="base_link">
+    <visual>
+      <material>
+        <ambient>0.9 0.8 0.0 1.0</ambient>
+        <diffuse>0.9 0.8 0.0 1.0</diffuse>
+      </material>
+    </visual>
+  </gazebo>
+
+  <!-- 앞/뒤 보라색 포인트 장식 (가상의 링크에 색상 부여) -->
+  <gazebo reference="front_bumper">
+    <visual>
+      <material>
+        <ambient>0.4 0.0 0.6 1.0</ambient>
+        <diffuse>0.4 0.0 0.6 1.0</diffuse>
+      </material>
+    </visual>
+  </gazebo>
+  
+  <gazebo reference="rear_bumper">
+    <visual>
+      <material>
+        <ambient>0.4 0.0 0.6 1.0</ambient>
+        <diffuse>0.4 0.0 0.6 1.0</diffuse>
+      </material>
+    </visual>
+  </gazebo>
+
+  <!-- 센서 마스트 기둥 (Silver/White Mast) -->
+  <gazebo reference="sensor_mast">
+    <visual>
+      <material>
+        <ambient>0.8 0.8 0.8 1.0</ambient>
+        <diffuse>0.8 0.8 0.8 1.0</diffuse>
+      </material>
+    </visual>
+  </gazebo>
+</robot>
