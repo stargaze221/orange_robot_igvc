@@ -1,11 +1,6 @@
 <?xml version="1.0"?>
 <launch>
 
-    <!-- RViz2에서 모든 관절(마스트 등)이 제대로 보이도록 상태값 전송 -->
-    <node pkg="joint_state_publisher" exec="joint_state_publisher" name="joint_state_publisher">
-        <param name="use_sim_time" value="true"/>
-    </node>
-
   <arg name="use_sim_time" default="true"/>
   <arg name="velodyne_frame" default="velodyne"/>
   <arg name="hokuyo_scan_topic" default="/hokuyo_scan"/>
@@ -47,7 +42,7 @@
     <arg name="fusion_odom_out" value="$(var fusion_odom_topic)"/>
   </include>
 
-  <!-- ✅ [수정] 모던 가제보(ros_gz_sim) 실행 (기존 gzserver + gzclient 통합) -->
+  <!-- Gazebo Fortress via ros_gz_sim -->
   <include file="$(find-pkg-share ros_gz_sim)/launch/gz_sim.launch.py">
     <arg name="gz_args" value="-r $(var world_file_path)"/>
   </include>
@@ -57,12 +52,12 @@
     <param name="robot_description" value="$(command 'xacro $(var xacro_file_path)')"/>
   </node>
 
-  <!-- ✅ [수정] 로봇 스폰 노드 교체 -->
+  <!-- Spawn robot through ros_gz_sim -->
   <node pkg="ros_gz_sim" exec="create" args="-name orange_robot -topic robot_description">
     <param name="use_sim_time" value="$(var use_sim_time)"/>
   </node>
 
-  <!-- ✅ [수정] ROS 2 <-> 가제보 통신 브릿지 (센서 데이터 완벽 추가!) -->
+  <!-- ROS 2 <-> Gazebo bridge -->
   <node pkg="ros_gz_bridge" exec="parameter_bridge" args="
     /cmd_vel@geometry_msgs/msg/Twist]gz.msgs.Twist 
     /odom@nav_msgs/msg/Odometry[gz.msgs.Odometry 
@@ -72,8 +67,6 @@
     /hokuyo_scan@sensor_msgs/msg/LaserScan[gz.msgs.LaserScan 
     /imu@sensor_msgs/msg/Imu[gz.msgs.IMU">
     <param name="use_sim_time" value="$(var use_sim_time)"/>
-    
-    <!-- 가제보의 라이다 데이터를 네가 만든 노드들이 찾는 이름으로 짝지어주기 -->
     <remap from="/mid360" to="/mid360_PointCloud2"/>
   </node>
 </launch>
