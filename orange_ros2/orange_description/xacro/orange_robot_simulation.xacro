@@ -14,6 +14,7 @@
   <xacro:include filename="$(find orange_description)/xacro/sensors/hokuyo.xacro"/>
   <xacro:include filename="$(find orange_description)/xacro/sensors/livox_simulation.xacro"/>
   <xacro:include filename="$(find orange_description)/xacro/sensors/imu.xacro"/>
+  <xacro:include filename="$(find orange_description)/xacro/sensors/rgb_camera.xacro"/>
 
   <!-- 색상 물감 준비 -->
   <material name="yellow"><color rgba="0.9 0.8 0.0 1.0"/></material>
@@ -83,7 +84,7 @@
     <visual><geometry><cylinder radius="0.02" length="0.5"/></geometry><material name="silver"/></visual>
   </link>
 
-  <!-- 6. 센서 (위치 스위치 완료!) -->
+  <!-- 6. 기존 LiDAR 센서 -->
   <joint name="front_camera_joint" type="fixed">
     <parent link="front_mast_link"/><child link="front_camera"/>
     <origin xyz="0 0 0.42" rpy="0 0 0"/>
@@ -105,6 +106,21 @@
   <xacro:sensor_hokuyo name="hokuyo" parent="rear_sensor" min_angle="-1.22" max_angle="1.22" samples="720">
     <origin xyz="0 0 0" rpy="0 0 0"/>
   </xacro:sensor_hokuyo>
+
+  <!-- 6a. Competition-compatible front downward RGB camera.
+       The initial mounting pose follows the 2026 Competition configuration.
+       Replace with measured robot geometry when available. -->
+  <xacro:sensor_rgb_camera
+      name="camera_front"
+      parent="base_link"
+      image_topic="camera_front/color/image_raw"
+      camera_info_topic="camera_front/color/camera_info"
+      width="424"
+      height="240"
+      update_rate="15"
+      hfov="1.50">
+    <origin xyz="0.42 0.0 1.48" rpy="0 1.2915 0"/>
+  </xacro:sensor_rgb_camera>
 
   <!-- 7. 메인 구동 바퀴 -->
   <joint name="left_wheel_hinge" type="continuous">
