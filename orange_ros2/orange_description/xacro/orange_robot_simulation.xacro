@@ -114,7 +114,7 @@
     LCAS-Lab/TnTechIGVC2026 Competition branch:
       * front RealSense D435I: downward RGB-D, 424x240 @ 15 Hz, 2.5 m depth clip
       * rear RealSense D435I: downward RGB only, 424x240 @ 6 Hz
-      * ZED2: forward RGB-D, HD720 @ 15 Hz, 0.2--5.0 m depth
+      * ZED2: forward RGB-D, HD720 @ 15 Hz, 0.2 to 5.0 m depth
 
     The RealSense topic names are kept compatible with the Competition lane
     nodes. ZED topics match unified_lane_node's default subscriptions.
