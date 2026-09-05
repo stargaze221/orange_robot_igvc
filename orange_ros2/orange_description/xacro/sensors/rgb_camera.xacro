@@ -23,7 +23,7 @@
       <child link="${name}_link"/>
     </joint>
 
-    <!-- REP-103 / ROS optical frame: x right, y down, z forward. -->
+    <!-- REP-103 ROS optical frame uses x right, y down, z forward. -->
     <link name="${name}_optical_frame"/>
     <joint name="${name}_optical_joint" type="fixed">
       <parent link="${name}_link"/>
