@@ -84,7 +84,7 @@
     <visual><geometry><cylinder radius="0.02" length="0.5"/></geometry><material name="silver"/></visual>
   </link>
 
-  <!-- 6. 기존 LiDAR 센서 -->
+  <!-- 6. Existing LiDAR sensors: intentionally unchanged for this checkpoint. -->
   <joint name="front_camera_joint" type="fixed">
     <parent link="front_mast_link"/><child link="front_camera"/>
     <origin xyz="0 0 0.42" rpy="0 0 0"/>
@@ -107,11 +107,20 @@
     <origin xyz="0 0 0" rpy="0 0 0"/>
   </xacro:sensor_hokuyo>
 
-  <!-- 6a. Competition-compatible front downward RGB-D camera.
-       The color stream and mounting pose follow the validated 2026
-       Competition-style baseline. A co-located depth sensor shares the
-       same physical link and optical frame so the RGB contract remains
-       unchanged while depth can be validated independently. -->
+  <!--
+    6a. Competition camera layout.
+
+    The poses, stream roles, resolutions, and rates mirror the current
+    LCAS-Lab/TnTechIGVC2026 Competition branch:
+      * front RealSense D435I: downward RGB-D, 424x240 @ 15 Hz, 2.5 m depth clip
+      * rear RealSense D435I: downward RGB only, 424x240 @ 6 Hz
+      * ZED2: forward RGB-D, HD720 @ 15 Hz, 0.2--5.0 m depth
+
+    The RealSense topic names are kept compatible with the Competition lane
+    nodes. ZED topics match unified_lane_node's default subscriptions.
+  -->
+
+  <!-- Front downward RealSense-like RGB-D camera. -->
   <xacro:sensor_rgb_camera
       name="camera_front"
       parent="base_link"
@@ -135,7 +144,57 @@
       update_rate="15"
       hfov="1.50"
       near_clip="0.10"
-      far_clip="20.0"/>
+      far_clip="2.50"/>
+
+  <!-- Rear downward RealSense-like RGB camera; depth is disabled on Competition. -->
+  <xacro:sensor_rgb_camera
+      name="camera_rear"
+      parent="base_link"
+      image_topic="camera_rear/color/image_raw"
+      camera_info_topic="camera_rear/color/camera_info"
+      width="424"
+      height="240"
+      update_rate="6"
+      hfov="1.50">
+    <origin xyz="-0.42 0.0 1.0" rpy="0 1.2915 3.14159"/>
+  </xacro:sensor_rgb_camera>
+
+  <!--
+    ZED mount frame used by the real robot and NVBlox configuration.
+    The optical sensor is a zero-offset child so the public TF tree contains
+    both zed_camera_link and the ZED-style left optical frame.
+  -->
+  <link name="zed_camera_link"/>
+  <joint name="base_to_zed_camera" type="fixed">
+    <parent link="base_link"/>
+    <child link="zed_camera_link"/>
+    <origin xyz="0.43 0.0 1.58" rpy="0 0.43 0"/>
+  </joint>
+
+  <xacro:sensor_rgb_camera
+      name="zed_left_camera"
+      parent="zed_camera_link"
+      image_topic="zed/zed_node/rgb/image_rect_color"
+      camera_info_topic="zed/zed_node/rgb/camera_info"
+      width="1280"
+      height="720"
+      update_rate="15"
+      hfov="1.91986">
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </xacro:sensor_rgb_camera>
+
+  <xacro:sensor_depth_camera
+      name="zed_depth"
+      parent="zed_left_camera_link"
+      image_topic="zed/zed_node/depth/depth_registered"
+      camera_info_topic="zed/zed_node/depth/camera_info"
+      frame_id="zed_left_camera_optical_frame"
+      width="1280"
+      height="720"
+      update_rate="15"
+      hfov="1.91986"
+      near_clip="0.20"
+      far_clip="5.0"/>
 
   <!-- 7. 메인 구동 바퀴 -->
   <joint name="left_wheel_hinge" type="continuous">
