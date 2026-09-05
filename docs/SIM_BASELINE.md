@@ -282,10 +282,12 @@ Verified results:
 - `ROS_DOMAIN_ID=0`
 - `/clock` delivered simulation time from Gazebo through `ros_gz_bridge` to the second container.
 - `/odom` delivered an `nav_msgs/msg/Odometry` sample with `frame_id: odom` and `child_frame_id: base_footprint`.
+- `/joint_states` delivered wheel joint positions and velocities for `left_wheel_hinge` and `right_wheel_hinge`.
+- `/tf` delivered dynamic wheel transforms from `base_link` to `left_wheel` and `right_wheel`.
 
 This rules out a ROS domain mismatch in the verified setup. The observed before/after behavior is consistent with an inter-container DDS shared-memory / IPC namespace issue; `ipc: host` is therefore part of the reproducible simulation baseline.
 
-The next milestone is command-and-feedback validation: send `/cmd_vel` and verify robot motion together with `/odom`, `/tf`, and `/joint_states` feedback.
+The remaining baseline milestone is command-and-feedback validation: send `/cmd_vel`, observe robot motion, and confirm corresponding odometry change.
 
 ## Host Requirements
 
