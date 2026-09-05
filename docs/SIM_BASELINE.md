@@ -168,6 +168,25 @@ When finished:
 xhost -local:docker
 ```
 
+## Verified Workspace Discovery
+
+Running `colcon list` from `/workspace` in the Compose container successfully discovered the eight ROS 2 packages currently stored in this repository:
+
+```text
+orange_bringup       orange_ros2/orange_bringup       (ros.ament_python)
+orange_description   orange_ros2/orange_description   (ros.ament_cmake)
+orange_gazebo        orange_ros2/orange_gazebo        (ros.ament_cmake)
+orange_navigation    orange_ros2/orange_navigation    (ros.ament_cmake)
+orange_sensor_tools  orange_ros2/orange_sensor_tools  (ros.ament_cmake)
+orange_slam          orange_ros2/orange_slam          (ros.ament_cmake)
+orange_teleop        orange_ros2/orange_teleop        (ros.ament_python)
+serial               serial                            (ros.ament_cmake)
+```
+
+This confirms that the repository root can be used directly as the colcon workspace root; the packages do not need to be moved under an additional `src/` directory for the current baseline.
+
+The full workspace is not yet treated as a single simulation dependency set. Real-robot packages and higher-level navigation packages declare additional hardware-specific and external dependencies. The simulation baseline will therefore validate a minimal simulation package subset before enabling the complete stack.
+
 ## Host Requirements
 
 Recommended:
