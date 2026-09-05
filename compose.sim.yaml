@@ -1,0 +1,19 @@
+services:
+  sim:
+    build:
+      context: .
+      dockerfile: docker/sim/Dockerfile
+    image: orange-igvc-sim:humble
+    network_mode: host
+    gpus: all
+    environment:
+      DISPLAY: ${DISPLAY}
+      NVIDIA_DRIVER_CAPABILITIES: all
+      QT_X11_NO_MITSHM: "1"
+    volumes:
+      - .:/workspace
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
