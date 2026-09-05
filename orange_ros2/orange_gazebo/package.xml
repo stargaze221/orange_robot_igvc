@@ -3,14 +3,17 @@
 <package format="3">
   <name>orange_gazebo</name>
   <version>0.0.0</version>
-  <description>ROS2 gazebo simulation tools for the orange robot</description>
+  <description>ROS2 Gazebo Fortress simulation tools for the orange robot</description>
   <maintainer email="shunki.shibuya.5v@stu.hosei.ac.jp">Shibuya</maintainer>
   <maintainer email="koki.kubota.8p@stu.hosei.ac.jp">Kubota</maintainer>
   <maintainer email="kimihiro.mori.4k@stu.hosei.ac.jp">Mori</maintainer>
   <license>Apache-2.0</license>
   <buildtool_depend>ament_cmake</buildtool_depend>
-  <depend>gazebo_ros_pkgs</depend>
+  <depend>ros_gz_sim</depend>
+  <depend>ros_gz_bridge</depend>
   <depend>robot_state_publisher</depend>
+  <depend>joint_state_publisher</depend>
+  <depend>xacro</depend>
   <depend>orange_description</depend>
   <depend>orange_sensor_tools</depend>
   <export>
