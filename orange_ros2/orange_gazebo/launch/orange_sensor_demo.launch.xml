@@ -28,8 +28,9 @@
     point-cloud frame convention consistent with ROS camera drivers such as
     RealSense and avoids Gazebo camera-frame / ROS optical-frame ambiguity.
 
-    Remapping image_rect to the standard camera namespace lets image_transport
-    pair it with /camera_front/depth/camera_info automatically.
+    Both inputs are remapped explicitly because point_cloud_xyz_node runs in
+    the root namespace by default; without the camera_info remap it subscribes
+    to /camera_info rather than /camera_front/depth/camera_info.
   -->
   <node pkg="depth_image_proc"
         exec="point_cloud_xyz_node"
@@ -37,6 +38,7 @@
         output="screen">
     <param name="use_sim_time" value="$(var use_sim_time)"/>
     <remap from="image_rect" to="/camera_front/depth/image_raw"/>
+    <remap from="camera_info" to="/camera_front/depth/camera_info"/>
     <remap from="points" to="/camera_front/depth/points"/>
   </node>
 
