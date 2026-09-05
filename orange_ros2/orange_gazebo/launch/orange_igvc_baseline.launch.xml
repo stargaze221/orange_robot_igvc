@@ -6,7 +6,7 @@
   <arg name="xacro_file_path"
        default="$(find-pkg-share orange_description)/xacro/orange_robot_simulation.xacro"/>
 
-  <!-- Minimal Gazebo Fortress baseline: world, robot, core ROS topics, and validated sensor interfaces. -->
+  <!-- Minimal Gazebo Fortress baseline: world, robot, core ROS topics, and Competition-aligned sensor interfaces. -->
   <include file="$(find-pkg-share ros_gz_sim)/launch/gz_sim.launch.py">
     <arg name="gz_args" value="-r $(var world_file_path)"/>
   </include>
@@ -38,7 +38,13 @@
               /camera_front/color/image_raw@sensor_msgs/msg/Image[ignition.msgs.Image
               /camera_front/color/camera_info@sensor_msgs/msg/CameraInfo[ignition.msgs.CameraInfo
               /camera_front/depth/image_raw@sensor_msgs/msg/Image[ignition.msgs.Image
-              /camera_front/depth/camera_info@sensor_msgs/msg/CameraInfo[ignition.msgs.CameraInfo">
+              /camera_front/depth/camera_info@sensor_msgs/msg/CameraInfo[ignition.msgs.CameraInfo
+              /camera_rear/color/image_raw@sensor_msgs/msg/Image[ignition.msgs.Image
+              /camera_rear/color/camera_info@sensor_msgs/msg/CameraInfo[ignition.msgs.CameraInfo
+              /zed/zed_node/rgb/image_rect_color@sensor_msgs/msg/Image[ignition.msgs.Image
+              /zed/zed_node/rgb/camera_info@sensor_msgs/msg/CameraInfo[ignition.msgs.CameraInfo
+              /zed/zed_node/depth/depth_registered@sensor_msgs/msg/Image[ignition.msgs.Image
+              /zed/zed_node/depth/camera_info@sensor_msgs/msg/CameraInfo[ignition.msgs.CameraInfo">
     <param name="use_sim_time" value="$(var use_sim_time)"/>
   </node>
 </launch>
