@@ -46,6 +46,47 @@ Initial development environment:
 
 These exact versions are not strict requirements. They record the first verified development environment.
 
+## Verified Container Baseline
+
+The first Docker image was successfully built on September 5, 2026 using:
+
+```bash
+docker build \
+  -t orange-igvc-sim:humble \
+  -f docker/sim/Dockerfile .
+```
+
+The container was launched with GPU access using:
+
+```bash
+docker run --rm -it \
+  --gpus all \
+  orange-igvc-sim:humble
+```
+
+The following runtime checks were verified inside the container:
+
+```bash
+echo $ROS_DISTRO
+ros2 pkg list | grep ros_gz
+ign gazebo --versions
+nvidia-smi
+```
+
+Verified results:
+
+- `ROS_DISTRO=humble`
+- `ros_gz`
+- `ros_gz_bridge`
+- `ros_gz_image`
+- `ros_gz_interfaces`
+- `ros_gz_sim`
+- `ros_gz_sim_demos`
+- Ignition Gazebo `6.18.0`
+- NVIDIA GeForce RTX 4060 visible from inside the container
+
+The command `gz sim` is not available in this environment. Fortress uses the `ign gazebo` CLI. This is important because the current repository contains some newer `gz`-namespace simulator conventions that may need to be normalized for the Humble/Fortress baseline.
+
 ## Host Requirements
 
 Recommended:
@@ -93,6 +134,8 @@ The current repository appears to contain an incomplete Gazebo migration.
 
 Some simulation files use modern Gazebo / `ros_gz` conventions, while some package dependencies still reference the Gazebo Classic stack through `gazebo_ros_pkgs`.
 
+The verified Humble container installs Gazebo Fortress / Ignition Gazebo 6.18.0. Therefore, newer simulator symbols such as `gz::sim` and plugin filenames using `gz-sim-*` should be treated as potential compatibility issues until validated against Fortress.
+
 The `hyoon/sim-baseline-cleanup` branch will normalize this simulation stack before SLAM, Nav2, and other higher-level functionality are enabled.
 
 The intended baseline is:
@@ -101,7 +144,7 @@ The intended baseline is:
 Ubuntu 22.04
     └── Docker
          └── ROS 2 Humble
-              └── Gazebo Fortress
+              └── Gazebo Fortress / Ignition Gazebo 6
                    └── ros_gz
 ```
 
