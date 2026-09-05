@@ -14,12 +14,13 @@
        default="$(find-pkg-share orange_description)/rviz2/sensor_demo.rviz"/>
 
   <!--
-    Student-shareable sensor checkpoint:
+    Student-shareable Competition-aligned sensor checkpoint:
       Gazebo Fortress + Orange robot
       automatic third-person Gazebo follow camera
-      Hokuyo LaserScan
-      front RGB-D camera
-      depth_image_proc-generated front depth point cloud
+      existing Hokuyo LaserScan
+      front/rear downward RealSense-like cameras
+      forward ZED-like RGB-D camera
+      depth_image_proc-generated ZED depth point cloud
       RViz sensor visualization
       keyboard teleoperation in a separate xterm window
   -->
@@ -43,23 +44,19 @@
         output="screen"/>
 
   <!--
-    Reconstruct the point cloud from the ROS optical-frame depth image and
-    CameraInfo instead of bridging Gazebo's native point cloud. This keeps the
-    point-cloud frame convention consistent with ROS camera drivers such as
-    RealSense and avoids Gazebo camera-frame / ROS optical-frame ambiguity.
-
-    Both inputs are remapped explicitly because point_cloud_xyz_node runs in
-    the root namespace by default; without the camera_info remap it subscribes
-    to /camera_info rather than /camera_front/depth/camera_info.
+    Reconstruct the forward ZED-like point cloud from the optical-frame depth
+    image and CameraInfo instead of bridging Gazebo's native point cloud. This
+    preserves the ROS optical-frame convention used by the real ZED driver and
+    avoids the Gazebo camera-frame / ROS optical-frame ambiguity seen earlier.
   -->
   <node pkg="depth_image_proc"
         exec="point_cloud_xyz_node"
-        name="camera_front_depth_point_cloud"
+        name="zed_depth_point_cloud"
         output="screen">
     <param name="use_sim_time" value="$(var use_sim_time)"/>
-    <remap from="image_rect" to="/camera_front/depth/image_raw"/>
-    <remap from="camera_info" to="/camera_front/depth/camera_info"/>
-    <remap from="points" to="/camera_front/depth/points"/>
+    <remap from="image_rect" to="/zed/zed_node/depth/depth_registered"/>
+    <remap from="camera_info" to="/zed/zed_node/depth/camera_info"/>
+    <remap from="points" to="/zed/zed_node/depth/points"/>
   </node>
 
   <node pkg="rviz2"
