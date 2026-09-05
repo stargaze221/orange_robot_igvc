@@ -87,6 +87,78 @@ Verified results:
 
 The command `gz sim` is not available in this environment. Fortress uses the `ign gazebo` CLI. This is important because the current repository contains some newer `gz`-namespace simulator conventions that may need to be normalized for the Humble/Fortress baseline.
 
+## Verified GUI and OpenGL Baseline
+
+X11 forwarding from the Docker container to the Ubuntu desktop was verified using `xeyes`.
+
+The container was launched with X11 and NVIDIA GPU access using:
+
+```bash
+xhost +local:docker
+
+docker run --rm -it \
+  --gpus all \
+  --network host \
+  -e DISPLAY=$DISPLAY \
+  -e NVIDIA_DRIVER_CAPABILITIES=all \
+  -v /tmp/.X11-unix:/tmp/.X11-unix:rw \
+  orange-igvc-sim:humble
+```
+
+Inside the container:
+
+```bash
+xeyes
+glxinfo -B
+```
+
+Verified OpenGL results:
+
+- X11 display: `:1`
+- Direct rendering: `Yes`
+- OpenGL vendor: `NVIDIA Corporation`
+- OpenGL renderer: `NVIDIA GeForce RTX 4060/PCIe/SSE2`
+- OpenGL version: `4.6.0 NVIDIA 610.43.02`
+- Dedicated video memory visible: `8188 MB`
+
+This confirms that Gazebo and RViz GUI applications can use hardware-accelerated NVIDIA OpenGL from inside the simulation container.
+
+After GUI use is complete, X11 access may be revoked with:
+
+```bash
+xhost -local:docker
+```
+
+## Docker Compose Workflow
+
+The root-level `compose.sim.yaml` captures the verified GPU, host-network, X11, and workspace-mount configuration.
+
+Before starting a GUI container:
+
+```bash
+xhost +local:docker
+```
+
+Build or update the image:
+
+```bash
+docker compose -f compose.sim.yaml build
+```
+
+Open an interactive simulation shell:
+
+```bash
+docker compose -f compose.sim.yaml run --rm sim
+```
+
+The repository is mounted at `/workspace`, so source changes on the host are immediately visible inside the container.
+
+When finished:
+
+```bash
+xhost -local:docker
+```
+
 ## Host Requirements
 
 Recommended:
@@ -113,10 +185,11 @@ docker run --rm --gpus all ubuntu nvidia-smi
 
 A successful result should show the host NVIDIA GPU from inside the container.
 
-## Planned Repository Layout
+## Repository Layout
 
 ```text
 orange_robot_igvc/
+├── compose.sim.yaml
 ├── docker/
 │   └── sim/
 │       └── Dockerfile
