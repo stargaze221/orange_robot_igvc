@@ -15,8 +15,11 @@
         exec="robot_state_publisher"
         name="robot_state_publisher">
     <param name="use_sim_time" value="$(var use_sim_time)"/>
+    <!-- Xacro expands to a full XML document. Force string type so launch does not
+         pass the generated URDF through YAML type inference. -->
     <param name="robot_description"
-           value="$(command 'xacro $(var xacro_file_path)')"/>
+           value="$(command 'xacro $(var xacro_file_path)')"
+           type="str"/>
   </node>
 
   <node pkg="ros_gz_sim"
