@@ -16,6 +16,7 @@
   <depend>orange_description</depend>
   <depend>orange_sensor_tools</depend>
   <exec_depend>depth_image_proc</exec_depend>
+  <exec_depend>orange_teleop</exec_depend>
   <exec_depend>rviz2</exec_depend>
   <export>
     <build_type>ament_cmake</build_type>
