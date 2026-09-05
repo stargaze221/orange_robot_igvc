@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="use_sim_time" default="true"/>
+  <arg name="world_file_path"
+       default="$(find-pkg-share orange_gazebo)/worlds/orange_igvc.world"/>
+  <arg name="xacro_file_path"
+       default="$(find-pkg-share orange_description)/xacro/orange_robot_simulation.xacro"/>
+
+  <!-- Minimal Gazebo Fortress baseline: world, robot, bridge only. -->
+  <include file="$(find-pkg-share ros_gz_sim)/launch/gz_sim.launch.py">
+    <arg name="gz_args" value="-r $(var world_file_path)"/>
+  </include>
+
+  <node pkg="robot_state_publisher"
+        exec="robot_state_publisher"
+        name="robot_state_publisher">
+    <param name="use_sim_time" value="$(var use_sim_time)"/>
+    <param name="robot_description"
+           value="$(command 'xacro $(var xacro_file_path)')"/>
+  </node>
+
+  <node pkg="ros_gz_sim"
+        exec="create"
+        name="spawn_orange_robot"
+        args="-name orange_robot -topic robot_description">
+    <param name="use_sim_time" value="$(var use_sim_time)"/>
+  </node>
+
+  <node pkg="ros_gz_bridge"
+        exec="parameter_bridge"
+        name="orange_baseline_bridge"
+        args="/cmd_vel@geometry_msgs/msg/Twist]ignition.msgs.Twist
+              /odom@nav_msgs/msg/Odometry[ignition.msgs.Odometry
+              /tf@tf2_msgs/msg/TFMessage[ignition.msgs.Pose_V
+              /joint_states@sensor_msgs/msg/JointState[ignition.msgs.Model
+              /clock@rosgraph_msgs/msg/Clock[ignition.msgs.Clock">
+    <param name="use_sim_time" value="$(var use_sim_time)"/>
+  </node>
+</launch>
