@@ -13,7 +13,7 @@
       Gazebo Fortress + Orange robot
       Hokuyo LaserScan
       front RGB-D camera
-      front depth point cloud
+      depth_image_proc-generated front depth point cloud
       RViz sensor visualization
   -->
   <include file="$(find-pkg-share orange_gazebo)/launch/orange_igvc_baseline.launch.xml">
@@ -22,12 +22,22 @@
     <arg name="xacro_file_path" value="$(var xacro_file_path)"/>
   </include>
 
-  <!-- Gazebo depth cameras also publish a native PointCloudPacked stream. -->
-  <node pkg="ros_gz_bridge"
-        exec="parameter_bridge"
-        name="orange_sensor_demo_pointcloud_bridge"
-        args="/camera_front/depth/image_raw/points@sensor_msgs/msg/PointCloud2[ignition.msgs.PointCloudPacked">
+  <!--
+    Reconstruct the point cloud from the ROS optical-frame depth image and
+    CameraInfo instead of bridging Gazebo's native point cloud. This keeps the
+    point-cloud frame convention consistent with ROS camera drivers such as
+    RealSense and avoids Gazebo camera-frame / ROS optical-frame ambiguity.
+
+    Remapping image_rect to the standard camera namespace lets image_transport
+    pair it with /camera_front/depth/camera_info automatically.
+  -->
+  <node pkg="depth_image_proc"
+        exec="point_cloud_xyz_node"
+        name="camera_front_depth_point_cloud"
+        output="screen">
     <param name="use_sim_time" value="$(var use_sim_time)"/>
+    <remap from="image_rect" to="/camera_front/depth/image_raw"/>
+    <remap from="points" to="/camera_front/depth/points"/>
   </node>
 
   <node pkg="rviz2"
