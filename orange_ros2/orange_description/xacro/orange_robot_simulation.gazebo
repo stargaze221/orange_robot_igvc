@@ -73,8 +73,8 @@
             filename="libignition-gazebo-diff-drive-system.so">
       <left_joint>left_wheel_hinge</left_joint>
       <right_joint>right_wheel_hinge</right_joint>
-      <wheel_separation>0.5672</wheel_separation>
-      <wheel_radius>0.1015</wheel_radius>
+      <wheel_separation>${wheel_separation}</wheel_separation>
+      <wheel_radius>${wheel_radius}</wheel_radius>
       <odom_publish_frequency>30</odom_publish_frequency>
       <topic>cmd_vel</topic>
       <odom_topic>odom</odom_topic>
@@ -87,7 +87,7 @@
             filename="libignition-gazebo-joint-state-publisher-system.so">
       <topic>joint_states</topic>
       <joint_name>left_wheel_hinge</joint_name>
-      <joint_name>right_wheel_hinge</joint_name>
+      <joint_name>right_wheel_hinge</right_joint>
     </plugin>
   </gazebo>
 </robot>
