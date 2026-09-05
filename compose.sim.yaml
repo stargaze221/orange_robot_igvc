@@ -5,11 +5,13 @@ services:
       dockerfile: docker/sim/Dockerfile
     image: orange-igvc-sim:humble
     network_mode: host
+    ipc: host
     gpus: all
     environment:
       DISPLAY: ${DISPLAY}
       NVIDIA_DRIVER_CAPABILITIES: all
       QT_X11_NO_MITSHM: "1"
+      ROS_DOMAIN_ID: ${ROS_DOMAIN_ID:-0}
     volumes:
       - .:/workspace
       - sim_build:/workspace/build
