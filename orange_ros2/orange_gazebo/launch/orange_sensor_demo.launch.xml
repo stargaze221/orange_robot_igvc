@@ -2,6 +2,10 @@
 <launch>
   <arg name="use_sim_time" default="true"/>
   <arg name="enable_keyboard_teleop" default="true"/>
+  <arg name="enable_gazebo_follow_camera" default="true"/>
+  <arg name="gazebo_follow_x" default="-5.0"/>
+  <arg name="gazebo_follow_y" default="0.0"/>
+  <arg name="gazebo_follow_z" default="3.0"/>
   <arg name="world_file_path"
        default="$(find-pkg-share orange_gazebo)/worlds/orange_igvc.world"/>
   <arg name="xacro_file_path"
@@ -12,6 +16,7 @@
   <!--
     Student-shareable sensor checkpoint:
       Gazebo Fortress + Orange robot
+      automatic third-person Gazebo follow camera
       Hokuyo LaserScan
       front RGB-D camera
       depth_image_proc-generated front depth point cloud
@@ -23,6 +28,19 @@
     <arg name="world_file_path" value="$(var world_file_path)"/>
     <arg name="xacro_file_path" value="$(var xacro_file_path)"/>
   </include>
+
+  <!--
+    Fortress CameraTracking is already part of the standard Gazebo GUI and
+    exposes /gui/follow and /gui/follow/offset. The helper waits for those
+    services and retries while the dynamically spawned orange_robot appears.
+    The offset is target-local, so (-X, 0, +Z) gives a chase-camera view that
+    rotates with the robot. Press Esc in the Gazebo scene to cancel following.
+  -->
+  <node if="$(var enable_gazebo_follow_camera)"
+        pkg="orange_gazebo"
+        exec="gazebo_follow_camera"
+        args="orange_robot $(var gazebo_follow_x) $(var gazebo_follow_y) $(var gazebo_follow_z)"
+        output="screen"/>
 
   <!--
     Reconstruct the point cloud from the ROS optical-frame depth image and
