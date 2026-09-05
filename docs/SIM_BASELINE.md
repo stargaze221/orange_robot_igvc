@@ -287,7 +287,40 @@ Verified results:
 
 This rules out a ROS domain mismatch in the verified setup. The observed before/after behavior is consistent with an inter-container DDS shared-memory / IPC namespace issue; `ipc: host` is therefore part of the reproducible simulation baseline.
 
-The remaining baseline milestone is command-and-feedback validation: send `/cmd_vel`, observe robot motion, and confirm corresponding odometry change.
+## Verified Command and Motion Feedback
+
+The final baseline milestone was completed by publishing a forward velocity command on `/cmd_vel` from a second Compose container while Gazebo ran in the first container. The Orange robot moved forward visibly in the IGVC world, and the ROS 2 feedback topics remained active.
+
+The tested command form was:
+
+```bash
+ros2 topic pub -r 10 /cmd_vel geometry_msgs/msg/Twist \
+  "{linear: {x: 0.3}, angular: {z: 0.0}}"
+```
+
+During the manual test the command was allowed to run for an extended period, and the robot advanced roughly 12 m in the simulated environment. This observation is consistent with sustained forward motion and was not intended as a calibrated speed/distance test.
+
+The simulator retains the last commanded velocity until another command is received, so a zero Twist should be sent explicitly to stop the robot:
+
+```bash
+ros2 topic pub --once /cmd_vel geometry_msgs/msg/Twist \
+  "{linear: {x: 0.0}, angular: {z: 0.0}}"
+```
+
+With this test, the initial simulation baseline is complete:
+
+```text
+Docker/GPU
+  -> Gazebo Fortress launch
+  -> Orange robot spawn
+  -> ros_gz bridge
+  -> cross-container ROS 2 data flow
+  -> /cmd_vel command
+  -> DiffDrive motion
+  -> /odom, /joint_states, and /tf feedback
+```
+
+Sensor-processing, SLAM, Nav2, and higher-level autonomy remain intentionally outside this first baseline.
 
 ## Host Requirements
 
