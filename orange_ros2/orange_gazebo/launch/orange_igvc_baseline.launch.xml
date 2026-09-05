@@ -6,7 +6,7 @@
   <arg name="xacro_file_path"
        default="$(find-pkg-share orange_description)/xacro/orange_robot_simulation.xacro"/>
 
-  <!-- Minimal Gazebo Fortress baseline: world, robot, bridge only. -->
+  <!-- Minimal Gazebo Fortress baseline: world, robot, core ROS topics, and Competition-aligned sensor interfaces. -->
   <include file="$(find-pkg-share ros_gz_sim)/launch/gz_sim.launch.py">
     <arg name="gz_args" value="-r $(var world_file_path)"/>
   </include>
@@ -15,8 +15,11 @@
         exec="robot_state_publisher"
         name="robot_state_publisher">
     <param name="use_sim_time" value="$(var use_sim_time)"/>
+    <!-- Xacro expands to a full XML document. Force string type so launch does not
+         pass the generated URDF through YAML type inference. -->
     <param name="robot_description"
-           value="$(command 'xacro $(var xacro_file_path)')"/>
+           value="$(command 'xacro $(var xacro_file_path)')"
+           type="str"/>
   </node>
 
   <node pkg="ros_gz_sim"
@@ -33,7 +36,18 @@
               /odom@nav_msgs/msg/Odometry[ignition.msgs.Odometry
               /tf@tf2_msgs/msg/TFMessage[ignition.msgs.Pose_V
               /joint_states@sensor_msgs/msg/JointState[ignition.msgs.Model
-              /clock@rosgraph_msgs/msg/Clock[ignition.msgs.Clock">
+              /clock@rosgraph_msgs/msg/Clock[ignition.msgs.Clock
+              /hokuyo_scan@sensor_msgs/msg/LaserScan[ignition.msgs.LaserScan
+              /camera_front/color/image_raw@sensor_msgs/msg/Image[ignition.msgs.Image
+              /camera_front/color/camera_info@sensor_msgs/msg/CameraInfo[ignition.msgs.CameraInfo
+              /camera_front/depth/image_raw@sensor_msgs/msg/Image[ignition.msgs.Image
+              /camera_front/depth/camera_info@sensor_msgs/msg/CameraInfo[ignition.msgs.CameraInfo
+              /camera_rear/color/image_raw@sensor_msgs/msg/Image[ignition.msgs.Image
+              /camera_rear/color/camera_info@sensor_msgs/msg/CameraInfo[ignition.msgs.CameraInfo
+              /zed/zed_node/rgb/image_rect_color@sensor_msgs/msg/Image[ignition.msgs.Image
+              /zed/zed_node/rgb/camera_info@sensor_msgs/msg/CameraInfo[ignition.msgs.CameraInfo
+              /zed/zed_node/depth/depth_registered@sensor_msgs/msg/Image[ignition.msgs.Image
+              /zed/zed_node/depth/camera_info@sensor_msgs/msg/CameraInfo[ignition.msgs.CameraInfo">
     <param name="use_sim_time" value="$(var use_sim_time)"/>
   </node>
 </launch>

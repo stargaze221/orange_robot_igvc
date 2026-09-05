@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="use_sim_time" default="true"/>
+  <arg name="enable_keyboard_teleop" default="true"/>
+  <arg name="enable_gazebo_follow_camera" default="true"/>
+  <arg name="gazebo_follow_x" default="-5.0"/>
+  <arg name="gazebo_follow_y" default="0.0"/>
+  <arg name="gazebo_follow_z" default="3.0"/>
+  <arg name="world_file_path"
+       default="$(find-pkg-share orange_gazebo)/worlds/orange_igvc.world"/>
+  <arg name="xacro_file_path"
+       default="$(find-pkg-share orange_description)/xacro/orange_robot_simulation.xacro"/>
+  <arg name="rviz_config_file"
+       default="$(find-pkg-share orange_description)/rviz2/sensor_demo.rviz"/>
+
+  <!--
+    Student-shareable Competition-aligned sensor checkpoint:
+      Gazebo Fortress + Orange robot
+      automatic third-person Gazebo follow camera
+      existing Hokuyo LaserScan
+      front/rear downward RealSense-like cameras
+      forward ZED-like RGB-D camera
+      depth_image_proc-generated ZED depth point cloud
+      RViz sensor visualization
+      keyboard teleoperation in a separate xterm window
+  -->
+  <include file="$(find-pkg-share orange_gazebo)/launch/orange_igvc_baseline.launch.xml">
+    <arg name="use_sim_time" value="$(var use_sim_time)"/>
+    <arg name="world_file_path" value="$(var world_file_path)"/>
+    <arg name="xacro_file_path" value="$(var xacro_file_path)"/>
+  </include>
+
+  <!--
+    Fortress CameraTracking is already part of the standard Gazebo GUI and
+    exposes /gui/follow and /gui/follow/offset. The helper waits for those
+    services and retries while the dynamically spawned orange_robot appears.
+    The offset is target-local, so (-X, 0, +Z) gives a chase-camera view that
+    rotates with the robot. Press Esc in the Gazebo scene to cancel following.
+  -->
+  <node if="$(var enable_gazebo_follow_camera)"
+        pkg="orange_gazebo"
+        exec="gazebo_follow_camera"
+        args="orange_robot $(var gazebo_follow_x) $(var gazebo_follow_y) $(var gazebo_follow_z)"
+        output="screen"/>
+
+  <!--
+    Reconstruct the forward ZED-like point cloud from the optical-frame depth
+    image and CameraInfo instead of bridging Gazebo's native point cloud. This
+    preserves the ROS optical-frame convention used by the real ZED driver and
+    avoids the Gazebo camera-frame / ROS optical-frame ambiguity seen earlier.
+  -->
+  <node pkg="depth_image_proc"
+        exec="point_cloud_xyz_node"
+        name="zed_depth_point_cloud"
+        output="screen">
+    <param name="use_sim_time" value="$(var use_sim_time)"/>
+    <remap from="image_rect" to="/zed/zed_node/depth/depth_registered"/>
+    <remap from="camera_info" to="/zed/zed_node/depth/camera_info"/>
+    <remap from="points" to="/zed/zed_node/depth/points"/>
+  </node>
+
+  <node pkg="rviz2"
+        exec="rviz2"
+        name="orange_sensor_demo_rviz"
+        args="-d $(var rviz_config_file)">
+    <param name="use_sim_time" value="$(var use_sim_time)"/>
+  </node>
+
+  <!-- Reuse the validated keyboard teleop launch; it opens in its own xterm. -->
+  <include if="$(var enable_keyboard_teleop)"
+           file="$(find-pkg-share orange_teleop)/launch/teleop_keyboard.launch.xml">
+    <arg name="cmd_vel" value="/cmd_vel"/>
+  </include>
+</launch>

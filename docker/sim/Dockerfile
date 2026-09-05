@@ -8,6 +8,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-humble-ros-gz \
     ros-humble-joy-linux \
     ros-humble-pcl-ros \
+    ros-humble-depth-image-proc \
     python3-colcon-common-extensions \
     python3-vcstool \
     python3-rosdep \

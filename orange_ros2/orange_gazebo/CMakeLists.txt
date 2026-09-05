@@ -13,4 +13,10 @@ install(DIRECTORY launch models worlds
   DESTINATION share/${PROJECT_NAME}/
 )
 
+install(PROGRAMS
+  scripts/gazebo_follow_camera.sh
+  DESTINATION lib/${PROJECT_NAME}
+  RENAME gazebo_follow_camera
+)
+
 ament_package()

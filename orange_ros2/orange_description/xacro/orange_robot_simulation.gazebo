@@ -57,12 +57,25 @@
     </material>
   </gazebo>
 
-  <gazebo reference="left_caster_link">
+  <!--
+    The four simulated casters are fixed spherical contacts rather than
+    physically rolling/swiveling caster assemblies. Keep their friction near
+    zero so they support the chassis without introducing artificial drag or
+    snagging at ramp transitions.
+  -->
+  <gazebo reference="fl_caster">
     <mu1>0.0</mu1>
     <mu2>0.0</mu2>
   </gazebo>
-
-  <gazebo reference="right_caster_link">
+  <gazebo reference="fr_caster">
+    <mu1>0.0</mu1>
+    <mu2>0.0</mu2>
+  </gazebo>
+  <gazebo reference="rl_caster">
+    <mu1>0.0</mu1>
+    <mu2>0.0</mu2>
+  </gazebo>
+  <gazebo reference="rr_caster">
     <mu1>0.0</mu1>
     <mu2>0.0</mu2>
   </gazebo>

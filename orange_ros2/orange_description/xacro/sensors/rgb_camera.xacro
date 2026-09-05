@@ -1,0 +1,91 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- Generic RGB camera used to emulate competition camera interfaces in Gazebo. -->
+  <xacro:macro name="sensor_rgb_camera"
+               params="name parent image_topic camera_info_topic width height update_rate hfov *origin">
+
+    <link name="${name}_link">
+      <visual>
+        <geometry><box size="0.09 0.03 0.03"/></geometry>
+        <material name="black"/>
+      </visual>
+      <inertial>
+        <mass value="0.10"/>
+        <inertia ixx="0.0001" ixy="0.0" ixz="0.0"
+                 iyy="0.0001" iyz="0.0" izz="0.0001"/>
+      </inertial>
+    </link>
+
+    <joint name="${name}_joint" type="fixed">
+      <xacro:insert_block name="origin"/>
+      <parent link="${parent}"/>
+      <child link="${name}_link"/>
+    </joint>
+
+    <!-- REP-103 ROS optical frame uses x right, y down, z forward. -->
+    <link name="${name}_optical_frame"/>
+    <joint name="${name}_optical_joint" type="fixed">
+      <parent link="${name}_link"/>
+      <child link="${name}_optical_frame"/>
+      <origin xyz="0 0 0" rpy="-1.57079632679 0 -1.57079632679"/>
+    </joint>
+
+    <gazebo reference="${name}_link">
+      <sensor type="camera" name="${name}">
+        <always_on>true</always_on>
+        <visualize>true</visualize>
+        <update_rate>${update_rate}</update_rate>
+        <topic>${image_topic}</topic>
+        <gz_frame_id>${name}_optical_frame</gz_frame_id>
+        <camera name="${name}">
+          <camera_info_topic>${camera_info_topic}</camera_info_topic>
+          <horizontal_fov>${hfov}</horizontal_fov>
+          <image>
+            <width>${width}</width>
+            <height>${height}</height>
+            <format>R8G8B8</format>
+          </image>
+          <clip>
+            <near>0.05</near>
+            <far>30.0</far>
+          </clip>
+        </camera>
+      </sensor>
+    </gazebo>
+
+  </xacro:macro>
+
+  <!--
+    Depth stream companion for an existing camera link. Keeping the depth
+    sensor separate preserves the already-validated RGB topic contract while
+    allowing the two simulated streams to share one physical pose and optical
+    frame, similar to a RealSense-style RGB-D device.
+  -->
+  <xacro:macro name="sensor_depth_camera"
+               params="name parent image_topic camera_info_topic frame_id width height update_rate hfov near_clip far_clip">
+    <gazebo reference="${parent}">
+      <sensor type="depth_camera" name="${name}">
+        <always_on>true</always_on>
+        <visualize>true</visualize>
+        <update_rate>${update_rate}</update_rate>
+        <topic>${image_topic}</topic>
+        <gz_frame_id>${frame_id}</gz_frame_id>
+        <camera name="${name}">
+          <camera_info_topic>${camera_info_topic}</camera_info_topic>
+          <horizontal_fov>${hfov}</horizontal_fov>
+          <image>
+            <width>${width}</width>
+            <height>${height}</height>
+            <format>R_FLOAT32</format>
+          </image>
+          <clip>
+            <near>${near_clip}</near>
+            <far>${far_clip}</far>
+          </clip>
+        </camera>
+      </sensor>
+    </gazebo>
+  </xacro:macro>
+
+</robot>
