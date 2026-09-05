@@ -54,31 +54,78 @@ colcon build \
 source install/setup.bash
 ```
 
-### Launch the IGVC Baseline
+## Verified Sensor Demo Checkpoint
+
+The current student-shareable checkpoint is launched with:
 
 ```bash
-ros2 launch orange_gazebo orange_igvc_baseline.launch.xml
+ros2 launch orange_gazebo orange_sensor_demo.launch.xml
 ```
 
-The current sensor-contract branch includes the validated mobile-robot baseline together with:
+This single launch prepares:
 
-- Hokuyo LiDAR
-- front downward RGB camera
-- front co-located depth camera
+- Gazebo Fortress with the IGVC course and Orange robot
+- automatic third-person Gazebo follow camera
+- keyboard teleoperation in a separate xterm window
+- RViz with the robot model and Hokuyo LaserScan
+- ZED-like forward RGB-D sensing and ROS-side depth point cloud
+- front downward RealSense-like RGB-D sensing
+- rear downward RealSense-like RGB sensing
+- front RealSense RGB and ZED RGB image displays in RViz
 
-Current front camera topics include:
+The camera layout follows the current TNTech IGVC Competition sensor roles:
 
 ```text
+Front RealSense-like:
+  pose  = (0.42, 0.0, 1.48), pitch 1.2915 rad
+  RGB-D = 424x240 @ 15 Hz
+  depth = 0.10 to 2.50 m
+
+Rear RealSense-like:
+  pose = (-0.42, 0.0, 1.00), pitch 1.2915 rad, yaw pi
+  RGB  = 424x240 @ 6 Hz
+
+ZED-like forward camera:
+  pose  = (0.43, 0.0, 1.58), pitch 0.43 rad
+  RGB-D = 1280x720 @ 15 Hz
+  depth = 0.20 to 5.00 m
+```
+
+Primary ROS topics include:
+
+```text
+/hokuyo_scan
+
 /camera_front/color/image_raw
 /camera_front/color/camera_info
 /camera_front/depth/image_raw
 /camera_front/depth/camera_info
+
+/camera_rear/color/image_raw
+/camera_rear/color/camera_info
+
+/zed/zed_node/rgb/image_rect_color
+/zed/zed_node/rgb/camera_info
+/zed/zed_node/depth/depth_registered
+/zed/zed_node/depth/camera_info
+/zed/zed_node/depth/points
+```
+
+The ZED depth point cloud is reconstructed with `depth_image_proc` from the bridged depth image and CameraInfo so that the PointCloud2 follows the ROS optical-frame convention.
+
+## Minimal Baseline Launch
+
+For the lower-level simulator / bridge baseline without the additional RViz and demo helpers:
+
+```bash
+ros2 launch orange_gazebo orange_igvc_baseline.launch.xml
 ```
 
 ## Detailed Documentation
 
 See:
 
+- [`docs/SENSOR_DEMO_CHECKPOINT.md`](docs/SENSOR_DEMO_CHECKPOINT.md) — frozen September 5, 2026 student-shareable sensor-demo checkpoint
 - [`docs/SIM_BASELINE.md`](docs/SIM_BASELINE.md) — reproducible Docker / ROS 2 / Gazebo baseline and validation history
 - [`docs/IGVC_2026_COURSE_SPEC.md`](docs/IGVC_2026_COURSE_SPEC.md) — deterministic 2026 IGVC course specification
 - [`orange_ros2/README.md`](orange_ros2/README.md) — upstream Orange ROS 2 package documentation
@@ -91,4 +138,4 @@ Current simulation sensor development is performed on:
 hyoon/sim-sensor-contract
 ```
 
-Simulation changes should be validated in Docker before being proposed for merge into the main project branch.
+Simulation changes should be validated in Docker before being proposed for merge into the main project branch. Higher-level lane detection, obstacle processing, NVBlox, SLAM, Nav2, and autonomous course execution should build on the verified sensor interface rather than silently changing it.
