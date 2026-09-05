@@ -87,7 +87,7 @@
             filename="libignition-gazebo-joint-state-publisher-system.so">
       <topic>joint_states</topic>
       <joint_name>left_wheel_hinge</joint_name>
-      <joint_name>right_wheel_hinge</right_joint>
+      <joint_name>right_wheel_hinge</joint_name>
     </plugin>
   </gazebo>
 </robot>
