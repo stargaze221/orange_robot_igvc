@@ -153,6 +153,15 @@ docker compose -f compose.sim.yaml run --rm sim
 
 The repository is mounted at `/workspace`, so source changes on the host are immediately visible inside the container.
 
+The Compose workflow was verified on September 5, 2026. Running `glxinfo -B` inside a container started by Compose reported:
+
+- Direct rendering: `Yes`
+- OpenGL vendor: `NVIDIA Corporation`
+- OpenGL renderer: `NVIDIA GeForce RTX 4060/PCIe/SSE2`
+- OpenGL version: `4.6.0 NVIDIA 610.43.02`
+
+Therefore the Compose path reproduces the same GPU-accelerated X11/OpenGL environment as the direct `docker run` configuration.
+
 When finished:
 
 ```bash
