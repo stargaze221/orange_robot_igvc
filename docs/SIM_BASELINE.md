@@ -211,6 +211,52 @@ All system dependencies have been satisfied
 
 This is the dependency baseline for the first Orange IGVC simulation build. Hardware bringup and higher-level navigation dependencies remain intentionally outside this minimal baseline.
 
+## Verified Simulation Build
+
+The first simulation-core colcon build completed successfully on September 5, 2026:
+
+```bash
+colcon build \
+  --symlink-install \
+  --packages-up-to orange_gazebo orange_teleop
+```
+
+Five packages completed successfully:
+
+```text
+serial
+orange_teleop
+orange_sensor_tools
+orange_description
+orange_gazebo
+```
+
+The build produced only non-fatal developer/deprecation warnings from Boost and PCL/CMake.
+
+## Verified Gazebo Launch
+
+A minimal launch file, `orange_igvc_baseline.launch.xml`, is used to validate the simulator independently of higher-level perception, SLAM, and navigation nodes.
+
+The baseline was launched with:
+
+```bash
+source install/setup.bash
+ros2 launch orange_gazebo orange_igvc_baseline.launch.xml
+```
+
+Verified runtime results:
+
+- Gazebo Fortress GUI opened successfully.
+- The `orange_igvc` environment model loaded.
+- The `orange_robot` entity was created successfully.
+- `robot_state_publisher` started.
+- `ros_gz_bridge` started for `/cmd_vel`, `/odom`, `/tf`, `/joint_states`, and `/clock`.
+- The robot was visibly rendered in the IGVC world.
+
+The current launch may emit non-fatal `XDG_RUNTIME_DIR`, EGL/DRI2, and URDF parser warnings. These do not block the verified baseline launch and will be cleaned up separately if they remain relevant.
+
+The next milestone is command-and-feedback validation: send `/cmd_vel` and verify `/odom`, `/tf`, and `/joint_states` while the robot moves.
+
 ## Host Requirements
 
 Recommended:
