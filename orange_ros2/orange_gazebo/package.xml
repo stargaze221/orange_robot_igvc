@@ -12,7 +12,6 @@
   <depend>ros_gz_sim</depend>
   <depend>ros_gz_bridge</depend>
   <depend>robot_state_publisher</depend>
-  <depend>joint_state_publisher</depend>
   <depend>xacro</depend>
   <depend>orange_description</depend>
   <depend>orange_sensor_tools</depend>
