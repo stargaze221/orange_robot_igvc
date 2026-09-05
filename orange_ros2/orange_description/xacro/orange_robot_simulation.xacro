@@ -107,9 +107,11 @@
     <origin xyz="0 0 0" rpy="0 0 0"/>
   </xacro:sensor_hokuyo>
 
-  <!-- 6a. Competition-compatible front downward RGB camera.
-       The initial mounting pose follows the 2026 Competition configuration.
-       Replace with measured robot geometry when available. -->
+  <!-- 6a. Competition-compatible front downward RGB-D camera.
+       The color stream and mounting pose follow the validated 2026
+       Competition-style baseline. A co-located depth sensor shares the
+       same physical link and optical frame so the RGB contract remains
+       unchanged while depth can be validated independently. -->
   <xacro:sensor_rgb_camera
       name="camera_front"
       parent="base_link"
@@ -121,6 +123,19 @@
       hfov="1.50">
     <origin xyz="0.42 0.0 1.48" rpy="0 1.2915 0"/>
   </xacro:sensor_rgb_camera>
+
+  <xacro:sensor_depth_camera
+      name="camera_front_depth"
+      parent="camera_front_link"
+      image_topic="camera_front/depth/image_raw"
+      camera_info_topic="camera_front/depth/camera_info"
+      frame_id="camera_front_optical_frame"
+      width="424"
+      height="240"
+      update_rate="15"
+      hfov="1.50"
+      near_clip="0.10"
+      far_clip="10.0"/>
 
   <!-- 7. 메인 구동 바퀴 -->
   <joint name="left_wheel_hinge" type="continuous">
