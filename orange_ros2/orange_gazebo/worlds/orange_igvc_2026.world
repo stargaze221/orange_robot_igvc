@@ -32,9 +32,13 @@
       <direction>-0.5 0.1 -0.9</direction>
     </light>
 
-    <!-- Generated deterministic 2026-normalized course. -->
+    <!--
+      Generated deterministic 2026-normalized course.
+      The smaller 4 m lane needs less +Y offset than the legacy 8 m course
+      so the robot spawned at the world origin starts inside the lower lane.
+    -->
     <include>
-      <pose>0 16.3 0 0 0 0</pose>
+      <pose>0 13.0 0 0 0 0</pose>
       <uri>model://orange_igvc_2026</uri>
       <name>orange_igvc_2026</name>
     </include>
