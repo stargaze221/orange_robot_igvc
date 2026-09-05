@@ -12,8 +12,16 @@ services:
       QT_X11_NO_MITSHM: "1"
     volumes:
       - .:/workspace
+      - sim_build:/workspace/build
+      - sim_install:/workspace/install
+      - sim_log:/workspace/log
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
     working_dir: /workspace
     stdin_open: true
     tty: true
     command: /bin/bash
+
+volumes:
+  sim_build:
+  sim_install:
+  sim_log:
