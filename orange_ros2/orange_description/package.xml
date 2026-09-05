@@ -11,9 +11,9 @@
   <buildtool_depend>ament_cmake</buildtool_depend>
   <depend>xacro</depend>
   <depend>urdf</depend>
-  <depend>gazebo_plugins</depend>
-  <depend>velodyne_gazebo_plugins</depend>
   <depend>orange_sensor_tools</depend>
+  <!-- Gazebo Classic plugin dependencies are intentionally excluded.
+       The simulation baseline targets ROS 2 Humble + Gazebo Fortress via ros_gz. -->
   <export>
     <build_type>ament_cmake</build_type>
   </export>
