@@ -91,11 +91,15 @@ The command `gz sim` is not available in this environment. Fortress uses the `ig
 
 X11 forwarding from the Docker container to the Ubuntu desktop was verified using `xeyes`.
 
-The container was launched with X11 and NVIDIA GPU access using:
+For the current simulation container, which runs as `root`, grant X11 access only to the local root user before launching a GUI container:
 
 ```bash
-xhost +local:docker
+xhost +si:localuser:root
+```
 
+A direct Docker launch can then use:
+
+```bash
 docker run --rm -it \
   --gpus all \
   --network host \
@@ -126,29 +130,51 @@ This confirms that Gazebo and RViz GUI applications can use hardware-accelerated
 After GUI use is complete, X11 access may be revoked with:
 
 ```bash
-xhost -local:docker
+xhost -si:localuser:root
 ```
+
+If Gazebo reports errors such as `Authorization required` or `qt.qpa.xcb: could not connect to display`, re-run the X11 grant above from the host before starting the GUI container.
 
 ## Docker Compose Workflow
 
 The root-level `compose.sim.yaml` captures the verified GPU, host-network, host-IPC, X11, and workspace-mount configuration.
 
-Before starting a GUI container:
+A reusable host-side helper is provided in `tools/igvc_shell.sh`. From the repository root:
 
 ```bash
-xhost +local:docker
+source tools/igvc_shell.sh
 ```
 
-Build or update the image:
+Then use:
+
+```bash
+igvc-sim
+```
+
+for a normal interactive simulation shell, or:
+
+```bash
+igvc-gui
+```
+
+for an interactive shell with temporary X11 access. `igvc-gui` grants `root` access to the host X server before opening the container and revokes that access when the shell exits.
+
+The helper automatically sources ROS 2 Humble and, when present, `/workspace/install/setup.bash` inside the container. It also determines the repository root from the helper script location, so users do not need to hard-code a local checkout path.
+
+The equivalent manual workflow is:
+
+```bash
+xhost +si:localuser:root
+
+docker compose -f compose.sim.yaml run --rm sim
+
+xhost -si:localuser:root
+```
+
+Build or update the image with:
 
 ```bash
 docker compose -f compose.sim.yaml build
-```
-
-Open an interactive simulation shell:
-
-```bash
-docker compose -f compose.sim.yaml run --rm sim
 ```
 
 The repository is mounted at `/workspace`, while colcon `build`, `install`, and `log` directories are stored in Docker named volumes.
@@ -161,12 +187,6 @@ The Compose workflow was verified on September 5, 2026. Running `glxinfo -B` ins
 - OpenGL version: `4.6.0 NVIDIA 610.43.02`
 
 Therefore the Compose path reproduces the same GPU-accelerated X11/OpenGL environment as the direct `docker run` configuration.
-
-When finished:
-
-```bash
-xhost -local:docker
-```
 
 ## Verified Workspace Discovery
 
@@ -358,6 +378,9 @@ orange_robot_igvc/
 │       └── Dockerfile
 ├── docs/
 │   └── SIM_BASELINE.md
+├── tools/
+│   ├── generate_igvc_2026_course.py
+│   └── igvc_shell.sh
 ├── orange_ros2/
 └── serial/
 ```
