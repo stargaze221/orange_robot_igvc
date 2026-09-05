@@ -187,6 +187,30 @@ This confirms that the repository root can be used directly as the colcon worksp
 
 The full workspace is not yet treated as a single simulation dependency set. Real-robot packages and higher-level navigation packages declare additional hardware-specific and external dependencies. The simulation baseline will therefore validate a minimal simulation package subset before enabling the complete stack.
 
+## Verified Simulation Dependencies
+
+The simulation-core dependency set was checked with:
+
+```bash
+rosdep check \
+  --from-paths \
+    orange_ros2/orange_description \
+    orange_ros2/orange_gazebo \
+    orange_ros2/orange_sensor_tools \
+    orange_ros2/orange_teleop \
+    serial \
+  --ignore-src \
+  -r
+```
+
+After removing Gazebo Classic-only manifest dependencies, aligning the simulation packages with `ros_gz`, and removing the redundant ROS `joint_state_publisher` path from the IGVC simulation launch, the command completed with:
+
+```text
+All system dependencies have been satisfied
+```
+
+This is the dependency baseline for the first Orange IGVC simulation build. Hardware bringup and higher-level navigation dependencies remain intentionally outside this minimal baseline.
+
 ## Host Requirements
 
 Recommended:
