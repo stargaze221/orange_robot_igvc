@@ -131,7 +131,7 @@ xhost -local:docker
 
 ## Docker Compose Workflow
 
-The root-level `compose.sim.yaml` captures the verified GPU, host-network, X11, and workspace-mount configuration.
+The root-level `compose.sim.yaml` captures the verified GPU, host-network, host-IPC, X11, and workspace-mount configuration.
 
 Before starting a GUI container:
 
@@ -151,7 +151,7 @@ Open an interactive simulation shell:
 docker compose -f compose.sim.yaml run --rm sim
 ```
 
-The repository is mounted at `/workspace`, so source changes on the host are immediately visible inside the container.
+The repository is mounted at `/workspace`, while colcon `build`, `install`, and `log` directories are stored in Docker named volumes.
 
 The Compose workflow was verified on September 5, 2026. Running `glxinfo -B` inside a container started by Compose reported:
 
@@ -255,7 +255,37 @@ Verified runtime results:
 
 The current launch may emit non-fatal `XDG_RUNTIME_DIR`, EGL/DRI2, and URDF parser warnings. These do not block the verified baseline launch and will be cleaned up separately if they remain relevant.
 
-The next milestone is command-and-feedback validation: send `/cmd_vel` and verify `/odom`, `/tf`, and `/joint_states` while the robot moves.
+## Verified Cross-Container ROS 2 Data Flow
+
+A second Compose container could discover the ROS 2 bridge endpoints while the simulator ran in the first container, but initially received no message samples. Ignition Transport topics such as `/clock`, `/odom`, `/joint_states`, and `/tf` were present and actively publishing, which isolated the problem to the ROS 2 transport path between containers rather than the Gazebo systems themselves.
+
+The Compose service was updated to share the host IPC namespace and to explicitly use ROS domain 0 by default:
+
+```yaml
+ipc: host
+
+environment:
+  ROS_DOMAIN_ID: ${ROS_DOMAIN_ID:-0}
+```
+
+After restarting both containers with this configuration, cross-container ROS 2 data flow was verified. In the second container:
+
+```bash
+source /workspace/install/setup.bash
+echo $ROS_DOMAIN_ID
+timeout 5 ros2 topic echo /clock --once
+timeout 5 ros2 topic echo /odom --once
+```
+
+Verified results:
+
+- `ROS_DOMAIN_ID=0`
+- `/clock` delivered simulation time from Gazebo through `ros_gz_bridge` to the second container.
+- `/odom` delivered an `nav_msgs/msg/Odometry` sample with `frame_id: odom` and `child_frame_id: base_footprint`.
+
+This rules out a ROS domain mismatch in the verified setup. The observed before/after behavior is consistent with an inter-container DDS shared-memory / IPC namespace issue; `ipc: host` is therefore part of the reproducible simulation baseline.
+
+The next milestone is command-and-feedback validation: send `/cmd_vel` and verify robot motion together with `/odom`, `/tf`, and `/joint_states` feedback.
 
 ## Host Requirements
 
