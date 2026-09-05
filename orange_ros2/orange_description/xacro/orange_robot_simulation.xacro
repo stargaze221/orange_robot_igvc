@@ -135,7 +135,7 @@
       update_rate="15"
       hfov="1.50"
       near_clip="0.10"
-      far_clip="10.0"/>
+      far_clip="20.0"/>
 
   <!-- 7. 메인 구동 바퀴 -->
   <joint name="left_wheel_hinge" type="continuous">
