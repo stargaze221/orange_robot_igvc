@@ -6,6 +6,8 @@ Panels:
         - /Global Options1
         - /Hokuyo LaserScan1
         - /ZED Forward Depth Point Cloud1
+        - /Front RealSense RGB1
+        - /ZED RGB1
       Splitter Ratio: 0.55
     Tree Height: 620
   - Class: rviz_common/Views
@@ -121,6 +123,39 @@ Visualization Manager:
       Use Fixed Frame: true
       Use rainbow: true
       Value: true
+    - Class: rviz_default_plugins/Image
+      Enabled: true
+      Name: Front RealSense RGB
+      Normalize Range: true
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Best Effort
+        Value: /camera_front/color/image_raw
+      Value: true
+    - Class: rviz_default_plugins/Image
+      Enabled: true
+      Name: ZED RGB
+      Normalize Range: true
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Best Effort
+        Value: /zed/zed_node/rgb/image_rect_color
+      Value: true
+    - Class: rviz_default_plugins/Image
+      Enabled: false
+      Name: Rear RealSense RGB
+      Normalize Range: true
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Best Effort
+        Value: /camera_rear/color/image_raw
+      Value: false
     - Class: rviz_default_plugins/TF
       Enabled: false
       Frame Timeout: 15
